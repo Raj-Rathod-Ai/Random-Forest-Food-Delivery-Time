@@ -232,6 +232,18 @@ if submit_button:
             </div>
             """, unsafe_allow_html=True)
             
+            # Boundary warning messages (Boundary Value Analysis check)
+            out_of_bounds = []
+            if distance < 0.59 or distance > 19.99:
+                out_of_bounds.append(f"Distance ({distance} km) is outside the typical training range (0.59 - 19.99 km).")
+            if prep_time < 5 or prep_time > 29:
+                out_of_bounds.append(f"Preparation Time ({prep_time} mins) is outside the typical training range (5 - 29 mins).")
+            if courier_exp < 0.0 or courier_exp > 9.0:
+                out_of_bounds.append(f"Courier Experience ({courier_exp} yrs) is outside the typical training range (0.0 - 9.0 yrs).")
+                
+            if out_of_bounds:
+                st.warning("⚠️ **Boundary Value Note**: Some inputs are outside historical training bounds. Because Random Forest is a tree-based model, predictions for out-of-bound inputs are capped at training limits to maintain accuracy and prevent extreme/invalid predictions.\n\n" + "\n".join([f"- {msg}" for msg in out_of_bounds]))
+            
             # Visual feedback indicators
             if prediction < 20:
                 st.success("🟢 Fast delivery expected!")
@@ -242,3 +254,4 @@ if submit_button:
                 
         except Exception as e:
             st.error(f"Error making prediction: {str(e)}")
+
